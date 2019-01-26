@@ -42,7 +42,7 @@ Function Get-ADUserMemberShip {
         [Parameter( ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $True,
                     Mandatory = $True,
-                    HelpMessage = 'Username to look up group membership for',
+                    HelpMessage = 'Username to look up group membership',
                     Position = 0)]
         [string[]]$UserName
 
