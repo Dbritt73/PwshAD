@@ -72,19 +72,40 @@ Function Get-BitLockerInformation {
 
                 }
 
-                $ADComputer = Get-ADComputer @ADcomp
+                if ($PSBoundParameters.ContainsKey(('Credential'))) {
 
-                $ADObj = @{
+                    $ADComputer = Get-ADComputer @ADcomp
 
-                    'Filter' = {objectclass -eq 'msFVE-RecoveryInformation'}
-                    'SearchBase' =  $ADComputer.DistinguishedName
-                    'Properties' = '*'
-                    'Credential' = $Credential
-                    'ErrorAction' = 'Stop'
+                    $ADObj = @{
+
+                        'Filter' = {objectclass -eq 'msFVE-RecoveryInformation'}
+                        'SearchBase' =  $ADComputer.DistinguishedName
+                        'Properties' = '*'
+                        'Credential' = $Credential
+                        'ErrorAction' = 'Stop'
+
+                    }
+
+                    $BitLocker = Get-ADObject @ADObj
+
+                } else {
+
+                    $ADcomp.Remove('Credential')
+
+                    $ADComputer = Get-ADComputer @ADcomp
+
+                    $ADObj = @{
+
+                        'Filter' = {objectclass -eq 'msFVE-RecoveryInformation'}
+                        'SearchBase' =  $ADComputer.DistinguishedName
+                        'Properties' = '*'
+                        'ErrorAction' = 'Stop'
+
+                    }
+
+                    $BitLocker = Get-ADObject @ADObj
 
                 }
-
-                $BitLocker = Get-ADObject @ADObj
 
                 foreach ($BLObj in $BitLocker) {
 
