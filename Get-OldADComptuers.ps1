@@ -4,16 +4,16 @@ function Get-OldADComputers {
     Gets a list of computers in AD that have not logged in for the past number of months
 
     .DESCRIPTION
-    Get-OldADComputers uses the existing Get-ADcomputer cmdlet to query a specified Organizational Unit and produces 
+    Get-OldADComputers uses the existing Get-ADcomputer cmdlet to query a specified Organizational Unit and produces
     computer objects that have not loggedin the past uyser specified months
 
     .EXAMPLE
-    Get-OldADComputers -SearchBase 'Computers.department' -MonthsOld '6'
+    Get-OldADComputers -SearchBase 'OU=Computers,OU=Department,DC=domain,DC=com' -MonthsOld '6'
 
     Gets all computers in the OU Computers.Department that havent been logged into for 6 months or longer
 
     .EXAMPLE
-    Get-OldADComputers -SearchBase 'Computers.Department','Computers.Department2' -MonthsOld '6'
+    Get-OldADComputers -SearchBase 'OU=Computers,OU=Department,DC=domain,DC=com','OU=Computers,OU=Department2,DC=domain,DC=com' -MonthsOld '6'
 
     Gets all computers in the OU Computers.Department and Computers.Depaertment2 that havent been logged into for 6 months or longer
 
@@ -22,7 +22,7 @@ function Get-OldADComputers {
     Param (
 
         [Parameter( Mandatory = $true,
-                    HelpMessage = 'Add help message for user',
+                    HelpMessage = 'Distinguished name of Organization Unit to query in AD',
                     ValueFromPipelineByPropertyName = $true,
                     ValueFromPipeline = $True)]
         [String[]]$SearchBase,
