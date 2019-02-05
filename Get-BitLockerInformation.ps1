@@ -113,12 +113,12 @@ Function Get-BitLockerInformation {
 
                         'ComputerName' = $computer
                         'Date' = $BLObj.Created
-                        'PasswordID' = [Regex]::Match($($BLObj.CN), '(?<={)(.*?)(?=})') | Select-Object -ExpandProperty Value
-                        'RecoveryPassword' = $BLObj | Select-Object -ExpandProperty msFVE-RecoveryPassword
+                        'PasswordID' = [Regex]::Match($($BLObj.CN), '(?<={)(.*?)(?=})') | Select-Object -ExpandProperty 'Value'
+                        'RecoveryPassword' = $BLObj | Select-Object -ExpandProperty 'msFVE-RecoveryPassword'
 
                     }
 
-                    $Obj = New-Object -TypeName psobject -Property $Props
+                    $Obj = New-Object -TypeName 'PSObject' -Property "$Props"
                     $Obj.PSObject.TypeNames.Insert(0,'Report.BitLocker')
                     Write-Output -InputObject $Obj
 
