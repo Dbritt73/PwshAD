@@ -74,7 +74,6 @@ Process {
         If ($Computer.Bitlocker -eq 'True') {
 
             Write-Verbose -Message "Moving $Computer from $SourceOU to $BitLockerOU"
-
             $Splat = @{
 
                 'Identity'    = $Computer.GUID
@@ -188,7 +187,6 @@ Process {
     Foreach ($Computer in $ComputerObject) {
 
         Write-Verbose -Message "Removing computer object : $($Computer.Name) : from System Center ConfigMgr Database"
-
         $splat = @{
 
             'CollectionID'   = $CollectionID
