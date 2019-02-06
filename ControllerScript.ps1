@@ -12,6 +12,8 @@ Param (
 
     [String]$CollectionID,
 
+    [String]$SiteCode,
+
     [System.Management.Automation.Credential()][pscredential]$ADcred = (Get-Credential -Message "This prompt is for your administrative account for Active Directory"),
 
     [System.Management.Automation.Credential()][pscredential]$SCCMCred = (Get-Credential -Message "This prompt is for your administrative account for SCCM")
@@ -181,7 +183,7 @@ Process {
 
     #Remove deleted objects from SCCM
     Write-Verbose -Message "Setting location to SCCM site PSDrive"
-    Set-Location -Path WWU:
+    Set-Location -Path $SiteCode
 
     Foreach ($Computer in $ComputerObject) {
 
@@ -189,7 +191,7 @@ Process {
 
         $splat = @{
 
-            'CollectionID' = $CollectionID
+            'CollectionID'   = $CollectionID
 
             'Name'           = $Computer.Name
 
