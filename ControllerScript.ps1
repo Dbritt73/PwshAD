@@ -54,6 +54,19 @@ Process {
     #Move AD Computers to specified delete OU
     $ComputerObject = Get-OldADComputers -SearchBase $SourceOU -MonthsOld '6'
 
+        #Log computer objects being moved and disabled
+        $Splat = @{
+
+            'Path' = "$PSScriptRoot\MoveLog.csv"
+
+            NoTypeInformation = $true
+
+            Append = $true
+
+        }
+
+        $ComputerObject | Export-Csv @Splat
+
     Foreach ($Computer in $ComputerObject) {
 
         If ($Computer.Bitlocker -eq 'True') {
@@ -77,7 +90,6 @@ Process {
         } Else {
 
             Write-Verbose -Message "Moving $Computer from $SourceOU to $DestinationOU"
-
             $Splat = @{
 
                 'Identity' = $Computer.GUID
@@ -92,6 +104,7 @@ Process {
 
             Move-ADObject @Splat
 
+            Write-Verbose -Message "Updating AD Description for $($Computer.Name)"
             $Splat = @{
 
                 'Identity'    = $Computer.DistinguishedName
@@ -104,29 +117,67 @@ Process {
 
             }
 
-            Write-Verbose -Message "Updating AD Description for $($Computer.Name)"
+
             Set-ADComputer @Splat
 
             Write-Verbose -Message "Disabling computer object $($Computer.Name)"
-            Disable-ADAccount -Identity $Computer.DistinguishedName
+            $Splat = @{
+
+                'Identity' = $Computer.DistinguishedName
+
+                'Credential' = $ADcred
+
+                'ErrorAction' = 'Stop'
+
+            }
+
+            Disable-ADAccount @Splat
 
         }
 
     }
 
-    $ComputerObject | Export-Csv -Path "$PSScriptRoot\MoveLog.csv" -NoTypeInformation -Append
-
     #Delete objects from zDelete that are 10 months old or older.
-    $ComputerObject = Get-OldADComputers -SearchBase $DestinationOU -MonthsOld '10'
+    $Splat = @{
+
+        'SearchBase' = $DestinationOU
+
+        'MonthsOld' = '10'
+
+        'Credential' = $ADcred
+
+    }
+
+    $ComputerObject = Get-OldADComputers @Splat
+
+        #Log computer objects being removed from AD and SCCM
+        $Splat = @{
+
+            'Path' = "$PSScriptRoot\DeleteLog.csv"
+
+            NoTypeInformation = $true
+
+            Append = $true
+
+        }
+
+        $ComputerObject | Export-Csv -Path @Splat
 
     Foreach ($Computer in $ComputerObject) {
 
         Write-Verbose -Message "Removing Computer Object : $($Computer.Name) : from Active Directory"
-        Remove-ADObject -Identity $Computer.GUID -Credential $ADcred
+        $Splat = @{
+
+            'Identity' = $Computer.GUID
+
+            'Credential' = $ADcred
+
+            'ErrorAction' = 'Stop'
+        }
+
+        Remove-ADObject @Splat
 
     }
-
-    $ComputerObject | Export-Csv -Path "$PSScriptRoot\DeleteLog.csv" -NoTypeInformation -Append
 
     #Remove deleted objects from SCCM
     Write-Verbose -Message "Setting location to SCCM site PSDrive"
@@ -148,7 +199,7 @@ Process {
 
         }
 
-        Get-CMDevice @splat | Remove-CMDevice -Credential $SCCMCred -Force
+        Get-CMDevice @splat | Remove-CMDevice -Credential "$SCCMCred" -Force
 
     }
 
