@@ -25,9 +25,9 @@ Begin {
         #Import SCCM PowerShell Module
         $splat = @{
 
-            'Name' = "$ENV:ProgramFiles(x86)\Microsoft Configuration Manager\bin\ConfigurationManager.psd1"
+            'Name'        = "$ENV:ProgramFiles(x86)\Microsoft Configuration Manager\bin\ConfigurationManager.psd1"
 
-            'Force' = $true
+            'Force'       = $true
 
             'ErrorAction' = 'Stop'
 
@@ -57,11 +57,11 @@ Process {
         #Log computer objects being moved and disabled
         $Splat = @{
 
-            'Path' = "$PSScriptRoot\MoveLog.csv"
+            'Path'            = "$PSScriptRoot\MoveLog.csv"
 
             NoTypeInformation = $true
 
-            Append = $true
+            Append            = $true
 
         }
 
@@ -75,11 +75,11 @@ Process {
 
             $Splat = @{
 
-                'Identity' = $Computer.GUID
+                'Identity'    = $Computer.GUID
 
-                'TargetPath' = $BitLockerOU
+                'TargetPath'  = $BitLockerOU
 
-                'Credential' = $ADcred
+                'Credential'  = $ADcred
 
                 'ErrorAction' = 'Stop'
 
@@ -92,11 +92,11 @@ Process {
             Write-Verbose -Message "Moving $Computer from $SourceOU to $DestinationOU"
             $Splat = @{
 
-                'Identity' = $Computer.GUID
+                'Identity'    = $Computer.GUID
 
-                'TargetPath' = $DestinationOU
+                'TargetPath'  = $DestinationOU
 
-                'Credential' = $ADcred
+                'Credential'  = $ADcred
 
                 'ErrorAction' = 'Stop'
 
@@ -123,9 +123,9 @@ Process {
             Write-Verbose -Message "Disabling computer object $($Computer.Name)"
             $Splat = @{
 
-                'Identity' = $Computer.DistinguishedName
+                'Identity'    = $Computer.DistinguishedName
 
-                'Credential' = $ADcred
+                'Credential'  = $ADcred
 
                 'ErrorAction' = 'Stop'
 
@@ -142,7 +142,7 @@ Process {
 
         'SearchBase' = $DestinationOU
 
-        'MonthsOld' = '10'
+        'MonthsOld'  = '10'
 
         'Credential' = $ADcred
 
@@ -153,11 +153,11 @@ Process {
         #Log computer objects being removed from AD and SCCM
         $Splat = @{
 
-            'Path' = "$PSScriptRoot\DeleteLog.csv"
+            'Path'            = "$PSScriptRoot\DeleteLog.csv"
 
             NoTypeInformation = $true
 
-            Append = $true
+            Append            = $true
 
         }
 
@@ -168,9 +168,9 @@ Process {
         Write-Verbose -Message "Removing Computer Object : $($Computer.Name) : from Active Directory"
         $Splat = @{
 
-            'Identity' = $Computer.GUID
+            'Identity'    = $Computer.GUID
 
-            'Credential' = $ADcred
+            'Credential'  = $ADcred
 
             'ErrorAction' = 'Stop'
         }
