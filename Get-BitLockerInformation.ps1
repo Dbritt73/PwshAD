@@ -5,8 +5,8 @@ Function Get-BitLockerInformation {
 
     .DESCRIPTION
     Get-BitLockerInformation utilizes existing ActiveDirectory Cmdlets to query the specified AD objects for information
-    on their BitLocker status. If no object is returned, then the named com,pute robject doesnt have any BitLocker information
-    stored in Active Directory.
+    on their BitLocker status. If no object is returned, then the named comouter object does not have any BitLocker
+    information stored in Active Directory.
 
     .PARAMETER ComputerName
     Name of computer object(s) to query for BitLocker information
