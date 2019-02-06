@@ -56,18 +56,18 @@ Process {
     #Move AD Computers to specified delete OU
     $ComputerObject = Get-OldADComputers -SearchBase $SourceOU -MonthsOld '6'
 
-        #Log computer objects being moved and disabled
-        $Splat = @{
+    #Log computer objects being moved and disabled
+    $Splat = @{
 
-            'Path'            = "$PSScriptRoot\MoveLog.csv"
+        'Path'              = "$PSScriptRoot\MoveLog.csv"
 
-            NoTypeInformation = $true
+        'NoTypeInformation' = $true
 
-            Append            = $true
+        'Append'            = $true
 
-        }
+    }
 
-        $ComputerObject | Export-Csv @Splat
+    $ComputerObject | Export-Csv @Splat
 
     Foreach ($Computer in $ComputerObject) {
 
@@ -151,18 +151,18 @@ Process {
 
     $ComputerObject = Get-OldADComputers @Splat
 
-        #Log computer objects being removed from AD and SCCM
-        $Splat = @{
+    #Log computer objects being removed from AD and SCCM
+    $Splat = @{
 
-            'Path'            = "$PSScriptRoot\DeleteLog.csv"
+        'Path'              = "$PSScriptRoot\DeleteLog.csv"
 
-            NoTypeInformation = $true
+        'NoTypeInformation' = $true
 
-            Append            = $true
+        'Append'            = $true
 
-        }
+    }
 
-        $ComputerObject | Export-Csv -Path @Splat
+    $ComputerObject | Export-Csv -Path @Splat
 
     Foreach ($Computer in $ComputerObject) {
 
