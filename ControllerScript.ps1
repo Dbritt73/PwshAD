@@ -199,7 +199,7 @@ Process {
 
         }
 
-        Get-CMDevice @splat | Remove-CMDevice -Credential "$SCCMCred" -Force
+        Get-CMDevice @splat | Remove-CMDevice -Credential $SCCMCred -Force
 
     }
 
