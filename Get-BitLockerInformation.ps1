@@ -118,7 +118,7 @@ Function Get-BitLockerInformation {
 
                     }
 
-                    $Obj = New-Object -TypeName 'PSObject' -Property "$Props"
+                    $Obj = New-Object -TypeName 'PSObject' -Property $Props
                     $Obj.PSObject.TypeNames.Insert(0,'Report.BitLocker')
                     Write-Output -InputObject $Obj
 
