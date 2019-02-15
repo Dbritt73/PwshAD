@@ -5,8 +5,8 @@ Function Get-BitLockerInformation {
 
     .DESCRIPTION
     Get-BitLockerInformation utilizes existing ActiveDirectory Cmdlets to query the specified AD objects for information
-    on their BitLocker status. If no object is returned, then the named com,pute robject doesnt have any BitLocker information
-    stored in Active Directory.
+    on their BitLocker status. If no object is returned, then the named comouter object does not have any BitLocker
+    information stored in Active Directory.
 
     .PARAMETER ComputerName
     Name of computer object(s) to query for BitLocker information
@@ -67,7 +67,9 @@ Function Get-BitLockerInformation {
                 $ADcomp = @{
 
                     'Identity' = $computer
+
                     'Credential' = $Credential
+
                     'ErrorAction' = 'Stop'
 
                 }
@@ -79,9 +81,13 @@ Function Get-BitLockerInformation {
                     $ADObj = @{
 
                         'Filter' = {objectclass -eq 'msFVE-RecoveryInformation'}
+
                         'SearchBase' =  $ADComputer.DistinguishedName
+
                         'Properties' = '*'
+
                         'Credential' = $Credential
+
                         'ErrorAction' = 'Stop'
 
                     }
@@ -97,8 +103,11 @@ Function Get-BitLockerInformation {
                     $ADObj = @{
 
                         'Filter' = {objectclass -eq 'msFVE-RecoveryInformation'}
+
                         'SearchBase' =  $ADComputer.DistinguishedName
+
                         'Properties' = '*'
+
                         'ErrorAction' = 'Stop'
 
                     }
@@ -112,8 +121,11 @@ Function Get-BitLockerInformation {
                     $props = [Ordered]@{
 
                         'ComputerName' = $computer
+
                         'Date' = $BLObj.Created
+
                         'PasswordID' = [Regex]::Match($($BLObj.CN), '(?<={)(.*?)(?=})') | Select-Object -ExpandProperty 'Value'
+
                         'RecoveryPassword' = $BLObj | Select-Object -ExpandProperty 'msFVE-RecoveryPassword'
 
                     }
