@@ -66,10 +66,8 @@ Function Get-BitLockerInformation {
 
                 $ADcomp = @{
 
-                    'Identity' = $computer
-
-                    'Credential' = $Credential
-
+                    'Identity'    = $computer
+                    'Credential'  = $Credential
                     'ErrorAction' = 'Stop'
 
                 }
@@ -80,14 +78,10 @@ Function Get-BitLockerInformation {
 
                     $ADObj = @{
 
-                        'Filter' = {objectclass -eq 'msFVE-RecoveryInformation'}
-
-                        'SearchBase' =  $ADComputer.DistinguishedName
-
-                        'Properties' = '*'
-
-                        'Credential' = $Credential
-
+                        'Filter'      = {objectclass -eq 'msFVE-RecoveryInformation'}
+                        'SearchBase'  =  $ADComputer.DistinguishedName
+                        'Properties'  = '*'
+                        'Credential'  = $Credential
                         'ErrorAction' = 'Stop'
 
                     }
@@ -102,12 +96,9 @@ Function Get-BitLockerInformation {
 
                     $ADObj = @{
 
-                        'Filter' = {objectclass -eq 'msFVE-RecoveryInformation'}
-
-                        'SearchBase' =  $ADComputer.DistinguishedName
-
-                        'Properties' = '*'
-
+                        'Filter'      = {objectclass -eq 'msFVE-RecoveryInformation'}
+                        'SearchBase'  =  $ADComputer.DistinguishedName
+                        'Properties'  = '*'
                         'ErrorAction' = 'Stop'
 
                     }
@@ -120,12 +111,9 @@ Function Get-BitLockerInformation {
 
                     $props = [Ordered]@{
 
-                        'ComputerName' = $computer
-
-                        'Date' = $BLObj.Created
-
-                        'PasswordID' = [Regex]::Match($($BLObj.CN), '(?<={)(.*?)(?=})') | Select-Object -ExpandProperty 'Value'
-
+                        'ComputerName'     = $computer
+                        'Date'             = $BLObj.Created
+                        'PasswordID'       = [Regex]::Match($($BLObj.CN), '(?<={)(.*?)(?=})') | Select-Object -ExpandProperty 'Value'
                         'RecoveryPassword' = $BLObj | Select-Object -ExpandProperty 'msFVE-RecoveryPassword'
 
                     }
