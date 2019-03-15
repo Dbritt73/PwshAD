@@ -1,5 +1,5 @@
 #Controller - AD Manager
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess = $True)]
 Param (
 
     [String]$SourceOU,
@@ -7,8 +7,6 @@ Param (
     [String]$DestinationOU,
 
     [String]$BitLockerOU,
-
-    [String]$MonthsOld,
 
     [String]$CollectionID,
 
@@ -28,9 +26,7 @@ Begin {
         $splat = @{
 
             'Name'        = "$ENV:ProgramFiles(x86)\Microsoft Configuration Manager\bin\ConfigurationManager.psd1"
-
             'Force'       = $true
-
             'ErrorAction' = 'Stop'
 
         }
@@ -60,9 +56,7 @@ Process {
     $Splat = @{
 
         'Path'              = "$PSScriptRoot\MoveLog.csv"
-
         'NoTypeInformation' = $true
-
         'Append'            = $true
 
     }
@@ -77,11 +71,8 @@ Process {
             $Splat = @{
 
                 'Identity'    = $Computer.GUID
-
                 'TargetPath'  = $BitLockerOU
-
                 'Credential'  = $ADcred
-
                 'ErrorAction' = 'Stop'
 
             }
@@ -94,11 +85,8 @@ Process {
             $Splat = @{
 
                 'Identity'    = $Computer.GUID
-
                 'TargetPath'  = $DestinationOU
-
                 'Credential'  = $ADcred
-
                 'ErrorAction' = 'Stop'
 
             }
@@ -109,11 +97,8 @@ Process {
             $Splat = @{
 
                 'Identity'    = $Computer.DistinguishedName
-
                 'Description' = "$($Computer.Description) - Disabled $(Get-Date) - PSScript"
-
                 'Credential'  = $ADcred
-
                 'ErrorAction' = 'Stop'
 
             }
@@ -125,9 +110,7 @@ Process {
             $Splat = @{
 
                 'Identity'    = $Computer.DistinguishedName
-
                 'Credential'  = $ADcred
-
                 'ErrorAction' = 'Stop'
 
             }
@@ -142,9 +125,7 @@ Process {
     $Splat = @{
 
         'SearchBase' = $DestinationOU
-
         'MonthsOld'  = '10'
-
         'Credential' = $ADcred
 
     }
@@ -155,9 +136,7 @@ Process {
     $Splat = @{
 
         'Path'              = "$PSScriptRoot\DeleteLog.csv"
-
         'NoTypeInformation' = $true
-
         'Append'            = $true
 
     }
@@ -170,9 +149,7 @@ Process {
         $Splat = @{
 
             'Identity'    = $Computer.GUID
-
             'Credential'  = $ADcred
-
             'ErrorAction' = 'Stop'
         }
 
@@ -190,11 +167,8 @@ Process {
         $splat = @{
 
             'CollectionID'   = $CollectionID
-
             'Name'           = $Computer.Name
-
             'Credential'     = $SCCMCred
-
             'ErrorAction'    = 'Stop'
 
         }
