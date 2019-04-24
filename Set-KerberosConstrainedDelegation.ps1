@@ -99,9 +99,27 @@ Function Set-KerberosConstrainedDelegation {
                     'ComputerName' = $ComputerName
                     'ScriptBlock'  = {
 
-                        if (Test-Path "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe") {
+                        if (Test-Path -Path "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe") {
 
-                            & "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe" PURGE -LI 0x3e7
+                            $ArgumentList = @(
+
+                                'PURGE'
+                                '-LI'
+                                '0x3e7'
+
+                            )
+
+                            $Splat = @{
+
+                                'FilePath'     = "$env:windir\System32\klist.exe"
+                                'ArgumentList' = $ArgumentList
+                                'Wait'         = $true
+                                'NoNewWindow'  = $true
+
+                            }
+
+                            Start-Process @Splat
+
                         }
 
                     }
