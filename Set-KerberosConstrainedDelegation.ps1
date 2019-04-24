@@ -1,54 +1,72 @@
 Function Set-KerberosConstrainedDelegation {
   <#
     .SYNOPSIS
-    Describe purpose of "Set-KerberosConstrainedDelegation" in 1-2 sentences.
+    Add delegate computer account to another active directory computer object
 
     .DESCRIPTION
-    Add a more complete description of what the function does.
+    Set-KerberosConstrainedDelegation can add or remove delegate entries in the msDS-AllowedToActOnBehalfOfOtherIdentity
+    property of an Active Directory computer. Intended as part of a solution to double hop issue when PSRemoting.
 
     .PARAMETER ComputerName
-    Describe parameter -ComputerName.
+    Name of computer to add the delegate entry to
 
     .PARAMETER Delegate
-    Describe parameter -Delegate.
+    Name of principal object to add as a delegate
 
     .PARAMETER Credential
-    Describe parameter -Credential.
+    Valid username and password for Active Directory
 
-    .PARAMETER Action
-    Describe parameter -Action.
+    .PARAMETER Allow
+    When called in conjunction with the Delegate parameter, adds specified computer as a delegate to the target
+
+    .PARAMETER Revoke
+    Remove all delegate entries on specified AD object
 
     .EXAMPLE
-    Set-KerberosConstrainedDelegation -ComputerName Value -Delegate Value -Credential Value -Action Value
-    Describe what this call does
+    Set-KerberosConstrainedDelegation -ComputerName SERVER01 -Delegate SERVER02 -Credential $Cred -Allow
+
+    Example showing SERVER02 being granted delegate access to SERVER01
+
+    .EXAMPLE
+    Set-KerberosConstrainedDelegation -ComputerName SERVER01 -Credential $Cred -Revoke
+
+    Example showing removal of all delegate permitted entries for SERVER01
 
     .NOTES
-    Place additional notes here.
+    Written to help with double hop issue when PSRemoting
 
     .LINK
     URLs to related sites
-    The first link is opened by Get-Help -Online Set-KerberosConstrainedDelegation
+    https://blogs.technet.microsoft.com/ashleymcglone/2016/08/30/powershell-remoting-kerberos-double-hop-solved-securely/
 
     .INPUTS
-    List of input types that are accepted by this function.
+    [String]ComputerName
+    [string]Delegate
+    [pscredential]Credential
+    [String]Action
 
     .OUTPUTS
-    List of output types produced by this function.
+    none
   #>
-
 
     [CmdletBinding()]
     Param (
 
-        [Parameter(Mandatory = $true)]
+        [Parameter( Mandatory = $true,
+                    HelpMessage='Computer to add or remove delegation')]
         [String]$ComputerName,
 
-        [string]$Delegate,
+        [Parameter(ParameterSetName = 'Allow')]
+        [String]$Delegate,
 
-        [pscredential]$Credential,
+        [System.Management.Automation.Credential()]
+        [PSCredential]$Credential,
 
-        [ValidateSet('Allow', 'Revoke')]
-        [String]$Action
+        [Parameter(ParameterSetName = 'Allow')]
+        [Switch]$Allow,
+
+        [Parameter(ParameterSetName = 'Revoke')]
+        [Switch]$Revoke
 
     )
 
@@ -63,45 +81,42 @@ Function Set-KerberosConstrainedDelegation {
 
         Try {
 
-            Switch ($Action) {
+            if ($Allow) {
 
-                'Allow' {
+                $Member = Get-ADComputer -Identity $Delegate
+                $splat = @{
 
-                    $Member = Get-ADComputer -Identity $Delegate
-                    $splat = @{
-
-                        'Identity'                             = $Target
-                        'PrincipalsAllowedToDelegateToAccount' = $Member
-                        'Credential'                           = $Credential
-
-                    }
-
-                    Set-ADComputer @splat
-
-                    $Splat = @{
-
-                        'ComputerName' = $ComputerName
-                        'ScriptBlock' = {& "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe" PURGE -LI 0x3e7}
-
-                    }
-
-                    Invoke-Command @Splat
+                    'Identity'                             = $Target
+                    'PrincipalsAllowedToDelegateToAccount' = $Member
+                    'Credential'                           = $Credential
 
                 }
 
-                'Revoke' {
+                Set-ADComputer @splat
 
-                    $splat = @{
+                #KLIST to purge existing Kerberos tickets cached on target computer
+                $Splat = @{
 
-                        'Identity'                             = $Target
-                        'PrincipalsAllowedToDelegateToAccount' = $null
-                        'Credential'                           = $Credential
-
-                    }
-
-                    Set-ADComputer @splat
+                    'ComputerName' = $ComputerName
+                    'ScriptBlock' = {& "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe" PURGE -LI 0x3e7}
 
                 }
+
+                Invoke-Command @Splat
+
+            }
+
+            if ($Revoke) {
+
+                $splat = @{
+
+                    'Identity'                             = $Target
+                    'PrincipalsAllowedToDelegateToAccount' = $null
+                    'Credential'                           = $Credential
+
+                }
+
+                Set-ADComputer @splat
 
             }
 
@@ -126,7 +141,6 @@ Function Set-KerberosConstrainedDelegation {
             $info
 
         }
-
 
     }
 
