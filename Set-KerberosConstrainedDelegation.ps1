@@ -49,7 +49,7 @@ Function Set-KerberosConstrainedDelegation {
     none
   #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     Param (
 
         [Parameter( Mandatory = $true,
@@ -70,25 +70,24 @@ Function Set-KerberosConstrainedDelegation {
 
     )
 
-    Begin {
-
-        $Target = Get-ADComputer -Identity $ComputerName
-
-
-    }
+    Begin {}
 
     Process {
 
         Try {
 
+            $Target = Get-ADComputer -Identity $ComputerName -ErrorAction 'Stop'
+
             if ($Allow) {
 
-                $Member = Get-ADComputer -Identity $Delegate
+                $Member = Get-ADComputer -Identity $Delegate -ErrorAction 'Stop'
+
                 $splat = @{
 
                     'Identity'                             = $Target
                     'PrincipalsAllowedToDelegateToAccount' = $Member
                     'Credential'                           = $Credential
+                    'ErrorAction'                          = 'Stop'
 
                 }
 
@@ -98,7 +97,15 @@ Function Set-KerberosConstrainedDelegation {
                 $Splat = @{
 
                     'ComputerName' = $ComputerName
-                    'ScriptBlock' = {& "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe" PURGE -LI 0x3e7}
+                    'ScriptBlock'  = {
+
+                        if (Test-Path "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe") {
+
+                            & "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe" PURGE -LI 0x3e7
+                        }
+
+                    }
+                    'ErrorAction'  = 'Stop'
 
                 }
 
@@ -113,6 +120,7 @@ Function Set-KerberosConstrainedDelegation {
                     'Identity'                             = $Target
                     'PrincipalsAllowedToDelegateToAccount' = $null
                     'Credential'                           = $Credential
+                    'ErrorAction'                          = 'Stop'
 
                 }
 
@@ -138,7 +146,7 @@ Function Set-KerberosConstrainedDelegation {
             }
 
             # output information. Post-process collected info, and log info (optional)
-            $info
+            Write-Output -InputObject $info
 
         }
 
