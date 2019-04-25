@@ -101,18 +101,10 @@ Function Set-KerberosConstrainedDelegation {
 
                         if (Test-Path -Path "$env:ProgramFiles(x86)\windows resource kits\tools\klist.exe") {
 
-                            $ArgumentList = @(
-
-                                'PURGE'
-                                '-LI'
-                                '0x3e7'
-
-                            )
-
                             $Splat = @{
 
                                 'FilePath'     = "$env:windir\System32\klist.exe"
-                                'ArgumentList' = $ArgumentList
+                                'ArgumentList' = @('PURGE', '-LI', '0x3e7')
                                 'Wait'         = $true
                                 'NoNewWindow'  = $true
 
