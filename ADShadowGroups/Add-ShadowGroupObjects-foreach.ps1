@@ -70,11 +70,16 @@ Function Add-ADShadowGroupMember {
 
             }
 
-            Get-ADObject @splat | ForEach-Object {
+            $OrgMembership = Get-ADObject @splat
 
-                Add-ADGroupMember -Identity $ShadowGroup -Members $_ -Credential $Credential
+            Write-Verbose -Message "$orgmembership"
+            Add-ADGroupMember -Identity $ShadowGroup -Members $OrgMembership -Credential $Credential
 
-            }
+            <#foreach ($Member in $OrgMembership) {
+
+                Add-ADGroupMember -Identity $ShadowGroup -Members $Member
+
+            }#>
 
         } Catch {
 

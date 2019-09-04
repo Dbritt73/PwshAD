@@ -1,33 +1,31 @@
-Function Add-ADShadowGroupMember {
+Function Remove-ADShadowGroupMembership {
   <#
     .SYNOPSIS
-    Add members to AD group based off Organizational Unit
+    Describe purpose of "Resolve-ShadowGroup" in 1-2 sentences.
 
     .DESCRIPTION
-    Add-ADShadowGroupMember uses existing AD Cmdlets to query an existing Organizational Unit and adds objects in that
-    unit to the specified AD Group
+    Add a more complete description of what the function does.
 
-    .PARAMETER OrgUnit
-    The Organizational Unit to query for group membership
+    .PARAMETER OU
+    Describe parameter -OU.
 
     .PARAMETER ShadowGroup
-    The Active Directory group to add objects found in the Organizational Unit specified by the OrgUnit parameter
+    Describe parameter -ShadowGroup.
 
     .EXAMPLE
-    Resolve-ShadowGroup -OrgUnit 'HumanResources' -ShadowGroup 'grp.hr.work'
-
-    Queries the HumanResources OU and adds all objects (users,computers, other groups, etc.) to the AD group grp.hr.wrk
+    Resolve-ShadowGroup -OU Value -ShadowGroup Value
+    Describe what this call does
 
     .NOTES
     Place additional notes here.
 
     .LINK
+    URLs to related sites
+    The first link is opened by Get-Help -Online Resolve-ShadowGroup
     https://ravingroo.com/458/active-directory-shadow-group-automatically-add-ou-users-membership/
 
     .INPUTS
-    [String]OrgUnit
-    [String]ShadowGroup
-    [pscredential]Credential
+    List of input types that are accepted by this function.
 
     .OUTPUTS
     List of output types produced by this function.
@@ -38,14 +36,11 @@ Function Add-ADShadowGroupMember {
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String]$OrgUnit,
+        [String]$OU,
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String]$ShadowGroup,
-
-        [Parameter()]
-        [pscredential]$Credential
+        [String]$ShadowGroup
 
     )
 
@@ -55,24 +50,18 @@ Function Add-ADShadowGroupMember {
 
         Try {
 
-            $splat = @{
+            $Splat = @{
 
-                'SearchBase'  = $OrgUnit
-                'SearchScope' = 'OneLevel'
-                'LDAPFilter'  = "(!memberOf=$ShadowGroup)"
+                'Identity'    = $ShadowGroup
                 'ErrorAction' = 'Stop'
 
             }
 
-            if ($PSBoundParameters.Contains('Credential')) {
+            $GroupMembership = Get-ADGroupMember @Splat | Where-Object {$_.distinguishedName -NotMatch $OU}
 
-                $splat.Add('Credential', $Credential)
+            foreach ($Member in $GroupMembership) {
 
-            }
-
-            Get-ADObject @splat | ForEach-Object {
-
-                Add-ADGroupMember -Identity $ShadowGroup -Members $_ -Credential $Credential
+                Remove-ADPrincipalGroupMembership -Identity $Member -MemberOf $ShadowGroup -Confirm:$false
 
             }
 
