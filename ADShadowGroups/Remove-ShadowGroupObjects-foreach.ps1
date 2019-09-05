@@ -66,9 +66,9 @@ Function Remove-ADShadowGroupMember {
 
             }
 
-            $GroupMembership = Get-ADGroupMember @Splat | Where-Object {$_.distinguishedName -NotMatch $OrgUnit}
+            $GroupMembership = Get-ADGroupMember @Splat | Where-Object {$_.DistinguishedName -NotMatch $OrgUnit}
 
-            if ($PSCmdlet.ShouldProcess($GroupName, 'Removing members')) {
+            if ($PSCmdlet.ShouldProcess($GroupName, 'Removing Members')) {
 
                 $splat = @{
 

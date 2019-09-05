@@ -70,7 +70,7 @@ Function Add-ADShadowGroupMember {
 
             }
 
-            if ($PSCmdlet.ShouldProcess($GroupName, 'Adding members')) {
+            if ($PSCmdlet.ShouldProcess($GroupName, 'Adding Members')) {
 
                 $OrgMembership = Get-ADObject @splat
 
@@ -118,7 +118,8 @@ Function Add-ADShadowGroupMember {
             }
 
             # output information. Post-process collected info, and log info (optional)
-            Write-Output -InputObject $info
+            #Write-Output -InputObject $info
+            Throw $info
 
         }
 
