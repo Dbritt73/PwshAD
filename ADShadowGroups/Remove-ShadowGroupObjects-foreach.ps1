@@ -1,46 +1,46 @@
-Function Remove-ADShadowGroupMembership {
+Function Remove-ADShadowGroupMember {
   <#
     .SYNOPSIS
-    Describe purpose of "Resolve-ShadowGroup" in 1-2 sentences.
+    Remove AD objects from AD group is no longer a member of a specified organizational unit
 
     .DESCRIPTION
-    Add a more complete description of what the function does.
+    Remove-ADShadowGroupMember uses existing AD Cmdlets to query an existing Organizational Unit and removes objects
+    from a specified AD group based on membership of the specified Organizationl Unit
 
-    .PARAMETER OU
-    Describe parameter -OU.
+    .PARAMETER OrgUnit
+    The Organizational Unit to query for group membership
 
-    .PARAMETER ShadowGroup
-    Describe parameter -ShadowGroup.
+    .PARAMETER GroupName
+    The Active Directory group to remove objects not found in the Organizational Unit specified by the OrgUnit parameter
 
     .EXAMPLE
-    Resolve-ShadowGroup -OU Value -ShadowGroup Value
+    Remove-ADShadowGroupMember -OrgUnit 'HumanResources' -GroupName 'grp.hr.work'
     Describe what this call does
 
     .NOTES
     Place additional notes here.
 
     .LINK
-    URLs to related sites
-    The first link is opened by Get-Help -Online Resolve-ShadowGroup
     https://ravingroo.com/458/active-directory-shadow-group-automatically-add-ou-users-membership/
 
     .INPUTS
-    List of input types that are accepted by this function.
+    [String[]]OrgUnit
+    [String]GroupName
 
     .OUTPUTS
     List of output types produced by this function.
   #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     Param (
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String]$OU,
+        [String[]]$OrgUnit,
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String]$ShadowGroup
+        [String]$GroupName
 
     )
 
@@ -52,16 +52,16 @@ Function Remove-ADShadowGroupMembership {
 
             $Splat = @{
 
-                'Identity'    = $ShadowGroup
+                'Identity'    = $GroupName
                 'ErrorAction' = 'Stop'
 
             }
 
-            $GroupMembership = Get-ADGroupMember @Splat | Where-Object {$_.distinguishedName -NotMatch $OU}
+            $GroupMembership = Get-ADGroupMember @Splat | Where-Object {$_.distinguishedName -NotMatch $OrgUnit}
 
             foreach ($Member in $GroupMembership) {
 
-                Remove-ADPrincipalGroupMembership -Identity $Member -MemberOf $ShadowGroup -Confirm:$false
+                Remove-ADPrincipalGroupMembership -Identity $Member -MemberOf $GroupName -Confirm:$false
 
             }
 

@@ -10,16 +10,16 @@ Function Add-ADShadowGroupMember {
     .PARAMETER OrgUnit
     The Organizational Unit to query for group membership
 
-    .PARAMETER ShadowGroup
+    .PARAMETER GroupName
     The Active Directory group to add objects found in the Organizational Unit specified by the OrgUnit parameter
 
     .EXAMPLE
-    Resolve-ShadowGroup -OrgUnit 'HumanResources' -ShadowGroup 'grp.hr.work'
+    Add-ADShadowGroupMember -OrgUnit 'HumanResources' -GroupName 'grp.hr.work'
 
     Queries the HumanResources OU and adds all objects (users,computers, other groups, etc.) to the AD group grp.hr.wrk
 
     .NOTES
-    Place additional notes here.
+    Original use case for software management through AD groups and SCCM
 
     .LINK
     https://ravingroo.com/458/active-directory-shadow-group-automatically-add-ou-users-membership/
@@ -33,7 +33,7 @@ Function Add-ADShadowGroupMember {
     List of output types produced by this function.
   #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     Param (
 
         [Parameter( Mandatory = $true,
@@ -42,7 +42,7 @@ Function Add-ADShadowGroupMember {
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String]$ShadowGroup,
+        [String]$GroupName,
 
         [Parameter()]
         [pscredential]$Credential
@@ -59,7 +59,7 @@ Function Add-ADShadowGroupMember {
 
                 'SearchBase'  = $OrgUnit
                 'SearchScope' = 'OneLevel'
-                'LDAPFilter'  = "(!memberOf=$ShadowGroup)"
+                'LDAPFilter'  = "(!memberOf=$GroupName)"
                 'ErrorAction' = 'Stop'
 
             }
@@ -77,7 +77,7 @@ Function Add-ADShadowGroupMember {
 
             <#foreach ($Member in $OrgMembership) {
 
-                Add-ADGroupMember -Identity $ShadowGroup -Members $Member
+                Add-ADGroupMember -Identity $GroupName -Members $Member
 
             }#>
 
