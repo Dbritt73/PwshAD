@@ -25,7 +25,7 @@ Function Add-ADShadowGroupMember {
     https://ravingroo.com/458/active-directory-shadow-group-automatically-add-ou-users-membership/
 
     .INPUTS
-    [String]OrgUnit
+    [String[]]OrgUnit
     [String]ShadowGroup
     [pscredential]Credential
 
@@ -38,14 +38,14 @@ Function Add-ADShadowGroupMember {
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String]$OrgUnit,
+        [String[]]$OrgUnit,
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
         [String]$GroupName,
 
         [Parameter()]
-        [pscredential]$Credential
+        [System.Management.Automation.Credential()][pscredential]$Credential
 
     )
 
@@ -64,22 +64,41 @@ Function Add-ADShadowGroupMember {
 
             }
 
-            if ($PSBoundParameters.Contains('Credential')) {
+            if ($PSBoundParameters.ContainsKey('Credential')) {
 
                 $splat.Add('Credential', $Credential)
 
             }
 
-            $OrgMembership = Get-ADObject @splat
+            if ($PSCmdlet.ShouldProcess($GroupName, 'Adding members')) {
 
-            Write-Verbose -Message "$orgmembership"
-            Add-ADGroupMember -Identity $ShadowGroup -Members $OrgMembership -Credential $Credential
+                $OrgMembership = Get-ADObject @splat
 
-            <#foreach ($Member in $OrgMembership) {
+                Write-Verbose -Message "$orgmembership"
 
-                Add-ADGroupMember -Identity $GroupName -Members $Member
+                $splat = @{
 
-            }#>
+                    'Identity'    = $GroupName
+                    'members'     = $OrgMembership
+                    'ErrorAction' = 'Stop'
+
+                }
+
+                if ($PSBoundParameters.ContainsKey('Credential')) {
+
+                    $splat.Add('Credential', $Credential)
+
+                }
+
+                Add-ADGroupMember @splat
+
+                <#foreach ($Member in $OrgMembership) {
+
+                    Add-ADGroupMember -Identity $GroupName -Members $Member
+
+                }#>
+
+            }
 
         } Catch {
 

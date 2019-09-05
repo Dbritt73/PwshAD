@@ -40,7 +40,10 @@ Function Remove-ADShadowGroupMember {
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String]$GroupName
+        [String]$GroupName,
+
+        [Parameter()]
+        [System.Management.Automation.Credential()][pscredential]$Credential
 
     )
 
@@ -57,11 +60,37 @@ Function Remove-ADShadowGroupMember {
 
             }
 
+            if ($PSBoundParameters.ContainsKey('Credential')) {
+
+                $splat.Add('Credential', $Credential)
+
+            }
+
             $GroupMembership = Get-ADGroupMember @Splat | Where-Object {$_.distinguishedName -NotMatch $OrgUnit}
 
-            foreach ($Member in $GroupMembership) {
+            if ($PSCmdlet.ShouldProcess($GroupName, 'Removing members')) {
 
-                Remove-ADPrincipalGroupMembership -Identity $Member -MemberOf $GroupName -Confirm:$false
+                $splat = @{
+
+                    'Identity'    = $GroupName
+                    'members'     = $GroupMembership
+                    'ErrorAction' = 'Stop'
+
+                }
+
+                if ($PSBoundParameters.ContainsKey('Credential')) {
+
+                    $splat.Add('Credential', $Credential)
+
+                }
+
+                Remove-ADGroupMember @splat
+
+                <#foreach ($Member in $GroupMembership) {
+
+                    Remove-ADPrincipalGroupMembership -Identity $Member -MemberOf $GroupName -Confirm:$false
+
+                }#>
 
             }
 
