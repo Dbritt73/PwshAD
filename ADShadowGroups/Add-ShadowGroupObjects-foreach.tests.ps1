@@ -17,12 +17,15 @@ Describe Add-ADShadowGroupMember {
     Context 'Parameters are being passed to helper functions' {
 
         Mock Add-ADGroupMember {
+
             Param ()
             $Script:Credential = $Credential
             $Global:Searchbase = $orgunit
+
         } -Verifiable
 
         Mock Get-ADObject {
+
             Param ($SearchBase)
             $Script:Credential = $Credential
             $Global:Searchbase = $orgunit
