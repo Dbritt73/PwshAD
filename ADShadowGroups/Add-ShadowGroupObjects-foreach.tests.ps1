@@ -19,7 +19,7 @@ Describe Add-ADShadowGroupMember {
         Mock Add-ADGroupMember {
             Param ()
             $Script:Credential = $Credential
-
+            $Global:Searchbase = $orgunit
         } -Verifiable
 
         Mock Get-ADObject {
@@ -30,6 +30,7 @@ Describe Add-ADShadowGroupMember {
         } -Verifiable
 
         It 'When -Credential is provided, Credentials should be passed to both Add-ADGroupMember and Get-ADObject' {
+
             $PW = ConvertTo-SecureString 'Password' -AsPlainText -Force
             $Cred = New-Object System.Management.Automation.PSCredential('SomeUser', $PW)
             Add-ADShadowGroupMember -orgunit 'OU=Test,DC=Com' -Groupname 'testgroup' -Credential $cred
