@@ -34,6 +34,7 @@ Describe Add-ADShadowGroupMember {
             $Cred = New-Object System.Management.Automation.PSCredential('SomeUser', $PW)
             Add-ADShadowGroupMember -orgunit 'OU=Test,DC=Com' -Groupname 'testgroup' -Credential $cred
             $Credential | Should -Not be $Null
+
         }
 
     }
