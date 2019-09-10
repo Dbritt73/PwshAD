@@ -21,9 +21,10 @@ Describe Add-ADShadowGroupMember {
                 $GroupName
 
             )
-            $Global:Credential = $Credential
-            $script:Searchbase = $SearchBase
-            $script:GroupName = $GroupName
+
+            $Script:Credential = $Credential
+            $Global:Searchbase = $SearchBase
+            $Global:GroupName  = $GroupName
 
         } -Verifiable
 
@@ -36,9 +37,10 @@ Describe Add-ADShadowGroupMember {
                 $GroupName
 
             )
-            $Global:Credential = $Credential
-            $script:Searchbase = $SearchBase
-            $script:GroupName = $GroupName
+
+            $Script:Credential = $Credential
+            $Global:Searchbase = $SearchBase
+            $Global:GroupName  = $GroupName
 
         } -Verifiable
 
@@ -46,6 +48,7 @@ Describe Add-ADShadowGroupMember {
 
             $PW = ConvertTo-SecureString 'Password' -AsPlainText -Force
             $Cred = New-Object System.Management.Automation.PSCredential('SomeUser', $PW)
+
             Add-ADShadowGroupMember -SearchBase 'OU=Test,DC=Com' -Groupname 'testgroup' -Credential $cred
             $Credential | Should -Not -Be $null
 
