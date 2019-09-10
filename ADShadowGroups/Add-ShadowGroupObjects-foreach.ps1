@@ -119,7 +119,7 @@ Function Add-ADShadowGroupMember {
 
             # output information. Post-process collected info, and log info (optional)
             #Write-Output -InputObject $info
-            Throw $info
+            Write-output $info
 
         }
 

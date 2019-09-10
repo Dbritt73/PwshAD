@@ -2,13 +2,9 @@ Describe Add-ADShadowGroupMember {
 
     Context 'Error Handling' {
 
-        Mock Add-ADGroupMember {Throw}
+        It "Should error if we're unable to modify group membership" {
 
-        Mock Get-ADObject {Throw}
-
-        It "Should throw if we're unable to modify group membership" {
-
-            {Add-ADShadowGroupMember -GroupName 'test' -SearchBase 'testorg'} | Should -Throw
+            {Add-ADShadowGroupMember -GroupName 'test' -SearchBase 'testorg'} | Should -BeOfType [PSCustomObject]
 
         }
 
@@ -18,17 +14,31 @@ Describe Add-ADShadowGroupMember {
 
         Mock Add-ADGroupMember {
 
-            Param ()
-            $Script:Credential = $Credential
-            $Global:Searchbase = $SearchBase
+            Param (
+
+                $SearchBase,
+
+                $GroupName
+
+            )
+            $Global:Credential = $Credential
+            $script:Searchbase = $SearchBase
+            $script:GroupName = $GroupName
 
         } -Verifiable
 
         Mock Get-ADObject {
 
-            Param ($SearchBase)
-            $Script:Credential = $Credential
-            $Global:Searchbase = $SearchBase
+            Param (
+
+                $SearchBase,
+
+                $GroupName
+
+            )
+            $Global:Credential = $Credential
+            $script:Searchbase = $SearchBase
+            $script:GroupName = $GroupName
 
         } -Verifiable
 
@@ -37,7 +47,7 @@ Describe Add-ADShadowGroupMember {
             $PW = ConvertTo-SecureString 'Password' -AsPlainText -Force
             $Cred = New-Object System.Management.Automation.PSCredential('SomeUser', $PW)
             Add-ADShadowGroupMember -SearchBase 'OU=Test,DC=Com' -Groupname 'testgroup' -Credential $cred
-            $Credential | Should -Not be $Null
+            $Credential | Should -Not -Be $null
 
         }
 
