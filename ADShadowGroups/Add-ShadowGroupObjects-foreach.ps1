@@ -7,14 +7,14 @@ Function Add-ADShadowGroupMember {
     Add-ADShadowGroupMember uses existing AD Cmdlets to query an existing Organizational Unit and adds objects in that
     unit to the specified AD Group
 
-    .PARAMETER OrgUnit
+    .PARAMETER SearchBase
     The Organizational Unit to query for group membership
 
     .PARAMETER GroupName
-    The Active Directory group to add objects found in the Organizational Unit specified by the OrgUnit parameter
+    The Active Directory group to add objects found in the Organizational Unit specified by the SearchBase parameter
 
     .EXAMPLE
-    Add-ADShadowGroupMember -OrgUnit 'HumanResources' -GroupName 'grp.hr.work'
+    Add-ADShadowGroupMember -SearchBase 'HumanResources' -GroupName 'grp.hr.work'
 
     Queries the HumanResources OU and adds all objects (users,computers, other groups, etc.) to the AD group grp.hr.wrk
 
@@ -25,8 +25,8 @@ Function Add-ADShadowGroupMember {
     https://ravingroo.com/458/active-directory-shadow-group-automatically-add-ou-users-membership/
 
     .INPUTS
-    [String[]]OrgUnit
-    [String]ShadowGroup
+    [String[]]SearchBase
+    [String]GroupName
     [pscredential]Credential
 
     .OUTPUTS
@@ -38,7 +38,7 @@ Function Add-ADShadowGroupMember {
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
-        [String[]]$OrgUnit,
+        [String[]]$SearchBase,
 
         [Parameter( Mandatory = $true,
                     HelpMessage = 'Add help message for user')]
@@ -57,7 +57,7 @@ Function Add-ADShadowGroupMember {
 
             $splat = @{
 
-                'SearchBase'  = $OrgUnit
+                'SearchBase'  = $SearchBase
                 'SearchScope' = 'OneLevel'
                 'LDAPFilter'  = "(!memberOf=$GroupName)"
                 'ErrorAction' = 'Stop'

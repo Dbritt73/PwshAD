@@ -8,7 +8,7 @@ Describe Add-ADShadowGroupMember {
 
         It "Should throw if we're unable to modify group membership" {
 
-            {Add-ADShadowGroupMember -GroupName 'test' -OrgUnit 'testorg'} | Should -Throw
+            {Add-ADShadowGroupMember -GroupName 'test' -SearchBase 'testorg'} | Should -Throw
 
         }
 
@@ -20,7 +20,7 @@ Describe Add-ADShadowGroupMember {
 
             Param ()
             $Script:Credential = $Credential
-            $Global:Searchbase = $orgunit
+            $Global:Searchbase = $SearchBase
 
         } -Verifiable
 
@@ -28,7 +28,7 @@ Describe Add-ADShadowGroupMember {
 
             Param ($SearchBase)
             $Script:Credential = $Credential
-            $Global:Searchbase = $orgunit
+            $Global:Searchbase = $SearchBase
 
         } -Verifiable
 
@@ -36,7 +36,7 @@ Describe Add-ADShadowGroupMember {
 
             $PW = ConvertTo-SecureString 'Password' -AsPlainText -Force
             $Cred = New-Object System.Management.Automation.PSCredential('SomeUser', $PW)
-            Add-ADShadowGroupMember -orgunit 'OU=Test,DC=Com' -Groupname 'testgroup' -Credential $cred
+            Add-ADShadowGroupMember -SearchBase 'OU=Test,DC=Com' -Groupname 'testgroup' -Credential $cred
             $Credential | Should -Not be $Null
 
         }
